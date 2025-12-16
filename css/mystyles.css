@@ -1,0 +1,136 @@
+/* Navigation styles */
+.nav {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.nav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #111827;
+    font-weight: 600;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    text-decoration: none;
+    transition: transform .14s, box-shadow .14s, background .14s;
+}
+.nav .nav-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    background: linear-gradient(90deg, var(--card), #fffefc);
+}
+.nav .nav-link:focus {
+    outline: 3px solid rgba(99, 102, 241, 0.12);
+    outline-offset: 4px;
+}
+body{
+    /* Use a clean system sans-serif for body text (minimal change) */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: rgba(248,250,255,0.95);
+    color: #111827;
+    line-height: 1.6;
+}
+h1,h2,h3,h4,h5,h6{
+    font-family:Georgia, 'Times New Roman', Times, serif, sans-serif;
+}
+.CSFOnt{
+    font-family:Georgia, 'Times New Roman', Times, serif, sans-serif;
+}
+.caketitle{
+    border: 5px solid rgb(230, 161, 213);
+    display:block;
+    margin:0;
+    padding:0.25rem 0.5rem;
+    background:transparent;
+}
+.cakeinfo{
+    color: midnightblue;
+}
+.header2{
+    color: rgb(65, 24, 24);
+    text-decoration: underline;
+    font-size: medium;
+}
+.cake-list{list-style:none;padding:0;margin:0 0 16px 0;color:#374151}
+.cake-list li{padding:8px 0;border-bottom:1px solid rgba(15,23,42,0.04)}
+/* When `cake-list` is an ordered list, show decimal markers */
+ol.cake-list{list-style:decimal;margin-left:1.25rem;padding-left:0}
+ol.cake-list > li{padding:8px 0;border-bottom:1px solid rgba(15,23,42,0.04)}
+.cake-details{list-style:disc;margin:6px 0 0 1.25rem;padding-left:0}
+.cake-details li{margin:4px 0;color:#4b5563}
+
+/* Menu toggle and dropdown */
+.menu-toggle{
+    width:40px;height:36px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:6px
+}
+.menu-toggle:focus{outline:3px solid rgba(99,102,241,0.12);outline-offset:3px}
+.hamburger{display:inline-block;width:18px;height:2px;background:#334155;position:relative;border-radius:2px}
+.hamburger::before,.hamburger::after{content:'';position:absolute;left:0;width:18px;height:2px;background:#334155;border-radius:2px}
+.hamburger::before{top:-6px}
+.hamburger::after{top:6px}
+
+.dropdown-menu{position:absolute;right:16px;top:calc(100% + 8px);background:var(--card);border-radius:10px;padding:8px;box-shadow:0 10px 30px rgba(2,6,23,0.12);min-width:180px;z-index:1200}
+.dropdown-menu[hidden]{display:none}
+.dropdown-item{display:block;padding:10px 12px;border-radius:8px;color:#0f172a;text-decoration:none}
+.dropdown-item + .dropdown-item{margin-top:6px}
+.dropdown-item:hover{background:linear-gradient(90deg,rgba(0,0,0,0.03),rgba(0,0,0,0.01))}
+
+/* Screen-smart behavior: show inline nav on wider screens and hide dropdown toggle if desired */
+@media (min-width:900px){
+    .dropdown-menu{display:none !important}
+    .menu-toggle{display:none}
+    .nav{display:flex}
+}
+
+/* Ensure header/menu sit above cake title border and header occupies space */
+.site-header{position:relative;z-index:60;padding:12px 16px;display:flex;align-items:center;justify-content:flex-end}
+.menu-toggle{z-index:70}
+.dropdown-menu{z-index:70}
+.caketitle{position:relative;z-index:10;margin-top:8px}
+
+/* Preserve the original 'Cakes!!' heading font (do not change font for this element) */
+#page-top, .caketitle h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 700;
+    font-size: 2.25rem;
+    color: #111827;
+}
+
+/* Small nav polish for top navigation (minimal, non-breaking changes) */
+.top-nav .nav-link{color:#374151;text-decoration:none;padding:6px 10px;border-radius:6px}
+.top-nav .nav-link:hover{background:rgba(99,102,241,0.06)}
+
+/* Center figures and images for a sleeker gallery */
+.figure{margin:16px auto;max-width:720px;text-align:center;border-radius:10px;overflow:hidden;box-shadow:0 8px 20px rgba(2,6,23,0.06)}
+.img-responsive{width:100%;height:auto;display:block;margin:0 auto;border-radius:8px}
+.figcaption{padding:8px 12px;color:#6b7280;background:#fff;text-align:center;font-size:0.95rem}
+
+/* Change the font for the ordered cake list titles to a modern sans-serif */
+ol.cake-list .cake-title{
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+/* Keep the nested details slightly lighter */
+ol.cake-list .cake-details li{
+    color: #374151;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+/* Accessible sr-only */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Work list styles */
+.work-list{margin:16px 0 8px 1.25rem;padding-left:0;list-style:decimal;counter-reset:work}
+.work-list > li{margin-bottom:12px}
+.work-list > li::marker{font-weight:700;color:#6b7280}
+.work-list .role{display:block;font-weight:700;margin-bottom:6px}
+.work-list ul{list-style:disc;margin-left:1.25rem}

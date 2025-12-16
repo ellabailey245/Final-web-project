@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cake Decorator Pro</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for aesthetic elements */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fce9f1 0%, #f4e8c1 100%);
+            min-height: 100vh;
+        }
+        .control-group {
+            #apply p-4 bg-white rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-xl;
+        }
+        .canvas-container {
+            /* Ensures canvas is centered and responsive */
+            min-height: 400px;
+            max-width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7f7f7;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            border: 4px solid #fff;
+        }
+        #cakeCanvas {
+            max-width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-pink-600 mb-2">🍰 Cake Decorator Pro 🎂</h1>
+            <p class="text-lg text-gray-700">Design your perfect tiered cake!</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Canvas Display Area -->
+            <div class="lg:col-span-2 canvas-container">
+                <canvas id="cakeCanvas" width="800" height="600"></canvas>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Number of Tiers -->
+                <div class="control-group">
+                    <label for="tiersInput" class="block text-sm font-medium text-gray-700 mb-2">Number of Tiers (<span id="tiersValue">3</span>)</label>
+                    <input type="range" id="tiersInput" min="1" max="4" value="3" step="1" class="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer range-lg">
+                </div>
+
+                <!-- Cake Color -->
+                <div class="control-group">
+                    <label for="cakeColorInput" class="block text-sm font-medium text-gray-700 mb-2">Cake (Sponge) Color</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" id="cakeColorInput" value="#e6ccb2" class="w-12 h-12 rounded-full cursor-pointer border-4 border-gray-200" aria-label="Cake color">
+                        <span id="cakeColorHex" class="text-gray-500 text-sm" aria-live="polite">#E6CCB2</span>
+                    </div>
+                </div>
+
+                <!-- Frosting Color -->
+                <div class="control-group">
+                    <label for="frostingColorInput" class="block text-sm font-medium text-gray-700 mb-2">Frosting Color</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" id="frostingColorInput" value="#ffffff" class="w-12 h-12 rounded-full cursor-pointer border-4 border-gray-200" aria-label="Frosting color">
+                        <span id="frostingColorHex" class="text-gray-500 text-sm" aria-live="polite">#FFFFFF</span>
+                    </div>
+                </div>
+
+                <!-- Piping Design -->
+                <div class="control-group">
+                    <label for="pipingDesignSelect" class="block text-sm font-medium text-gray-700 mb-2">Piping Design</label>
+                    <select id="pipingDesignSelect" class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm rounded-lg shadow-sm">
+                        <option value="none">None</option>
+                        <option value="dots" selected>Small Dots</option>
+                        <option value="shells">Shells (Scallops)</option>
+                        <option value="swirls">Swirls (S-Curves)</option>
+                    </select>
+                </div>
+
+                <!-- Piping Color (separate from frosting color) -->
+                <div class="control-group">
+                    <label for="pipingColorInput" class="block text-sm font-medium text-gray-700 mb-2">Piping Color (Design)</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" id="pipingColorInput" value="#ff6b6b" class="w-12 h-12 rounded-full cursor-pointer border-4 border-gray-200" aria-label="Piping color">
+                        <span id="pipingColorHex" class="text-gray-500 text-sm" aria-live="polite">#FF6B6B</span>
+                    </div>
+                </div>
+
+                <!-- Flavor selection -->
+                <div class="control-group">
+                    <label for="flavorSelect" class="block text-sm font-medium text-gray-700 mb-2">Cake Flavor</label>
+                    <select id="flavorSelect" class="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm rounded-lg shadow-sm">
+                        <option value="vanilla" selected>Vanilla</option>
+                        <option value="chocolate">Chocolate</option>
+                        <option value="lemon">Lemon</option>
+                        <option value="redvelvet">Red Velvet</option>
+                    </select>
+                    <p id="flavorNote" class="text-xs text-gray-500 mt-2">Flavor affects description only (visual sponge color is controlled separately).</p>
+                </div>
+
+            </div>
+        </main>
+        
+        <footer class="text-center mt-10 text-gray-500 text-sm">
+            <p>&copy; 2024 Cake Designer. Happy baking!</p>
+        </footer>
+    </div>
+
+    <script>
+    // Wrapping all logic in an IIFE to create a private scope and prevent global variable redeclaration errors.
+    (function() {
+            // --- Scoped Variables ---
+            let canvas, ctx, W, H;
+            let cakeState;
+            let tiersInput, tiersValueSpan, cakeColorInput, cakeColorHexSpan, frostingColorInput, frostingColorHexSpan, pipingDesignSelect;
+            let pipingColorInput, pipingColorHexSpan, flavorSelect, flavorNote;
+
+            // Small helper to provide roundRect on the 2D context in case the browser doesn't implement it
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                    r = r || 0;
+                    this.beginPath();
+                    this.moveTo(x + r, y);
+                    this.arcTo(x + w, y, x + w, y + h, r);
+                    this.arcTo(x + w, y + h, x, y + h, r);
+                    this.arcTo(x, y + h, x, y, r);
+                    this.arcTo(x, y, x + w, y, r);
+                    this.closePath();
+                };
+            }
+
+            // --- Drawing Functions (now defined inside the safe scope) ---
+
+            /**
+             * Draws a decorative cake stand underneath the cake.
+             */
+            function drawCakeStand(bottomY, maxTierWidth) {
+                const standWidth = maxTierWidth + 80;
+                const standHeight = 10;
+                const standX = W / 2 - standWidth / 2;
+                const standY = bottomY + 5; // Place 5px below the lowest tier
+
+                // 1. Draw the Base Plate (Platter)
+                ctx.fillStyle = '#b8860b'; // Dark gold
+                ctx.beginPath();
+                ctx.ellipse(W / 2, standY + standHeight / 2, standWidth / 2, standHeight / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 2. Draw the Pedestal
+                const pedestalWidth = standWidth * 0.2;
+                const pedestalHeight = 25;
+                const pedestalX = W / 2 - pedestalWidth / 2;
+                const pedestalY = standY + standHeight;
+
+                ctx.fillStyle = '#d4af37'; // Light gold
+                ctx.fillRect(pedestalX, pedestalY, pedestalWidth, pedestalHeight);
+
+                // 3. Draw the Foot (Base of stand)
+                const footWidth = standWidth * 0.4;
+                const footHeight = 8;
+                const footX = W / 2 - footWidth / 2;
+                const footY = pedestalY + pedestalHeight;
+                
+                ctx.fillStyle = '#b8860b'; // Dark gold
+                ctx.beginPath();
+                ctx.ellipse(W / 2, footY + footHeight / 2, footWidth / 2, footHeight / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            /**
+             * Draws the base sponge layer of a single tier.
+             */
+            function drawTierBase(x, y, width, height, color) {
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, width, height);
+
+                // Add a subtle texture/shade to the top
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(x, y, width, 5);
+            }
+
+            /**
+             * Draws the frosting layer (slightly larger than the base).
+             */
+            function drawFrosting(x, y, width, height, color) {
+                const F_PADDING = 5; // Frosting overhang/thickness
+
+                // Draw a slightly larger layer for the top frosting
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                // Top edge (rounded to look like soft frosting)
+                // Use ellipse for top for a slightly 3D effect if we were doing isometric, but roundRect for simplicity
+                ctx.roundRect(x - F_PADDING, y - F_PADDING, width + F_PADDING * 2, F_PADDING * 2, 5);
+                ctx.fill();
+
+                // Draw the side frosting (slightly covering the base)
+                ctx.fillStyle = color;
+                ctx.fillRect(x - F_PADDING, y + F_PADDING, width + F_PADDING * 2, height - F_PADDING * 2);
+            }
+
+            /**
+             * Draws the selected piping design along the top edge of the tier.
+             */
+            function drawPiping(x, y, width, height, design, color) {
+                ctx.fillStyle = color;
+                ctx.strokeStyle = color;
+                const F_PADDING = 5;
+                // Set the drawing line to the top of the frosting (y - F_PADDING)
+                const pipingLineY = y - F_PADDING; 
+
+                switch (design) {
+                    case 'dots':
+                        for (let i = 0; i <= width + F_PADDING * 2; i += 15) {
+                            ctx.beginPath();
+                            // Center Y is pipingLineY (top of frosting)
+                            ctx.arc(x - F_PADDING + i, pipingLineY, 4, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        break;
+                    case 'shells':
+                        const shellSize = 15;
+                        const frostedWidth = width + F_PADDING * 2;
+                        
+                        // Start drawing from the left edge of the frosting
+                        let currentX = x - F_PADDING;
+
+                        // Calculate how many shells fit
+                        const numShells = Math.floor(frostedWidth / shellSize);
+
+                        // Calculate remaining space for centering
+                        const remaining = frostedWidth - (numShells * shellSize);
+                        const startOffset = remaining / 2;
+
+                        for (let n = 0; n < numShells; n++) {
+                            ctx.beginPath();
+                            
+                            // Shell center X
+                            const shellCenterX = currentX + startOffset + (n * shellSize) + shellSize / 2;
+                            // Shell center Y: pipingLineY (top of frosting) + radius (to align flat edge with pipingLineY)
+                            const centerY = pipingLineY + shellSize / 2; 
+                            
+                            // Draw the bottom half-circle (flipped scallop)
+                            // Start angle PI (left), end angle 2*PI (right), clockwise (false)
+                            ctx.arc(shellCenterX, centerY, shellSize / 2, Math.PI, 2 * Math.PI, false);
+                            ctx.fill();
+                        }
+                        break;
+                    case 'swirls':
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        // Draw a continuous wavy line
+                        for (let i = 0; i <= width + F_PADDING * 2; i += 1) {
+                            const waveHeight = 5 * Math.sin(i * 0.3);
+                            const waveY = pipingLineY + waveHeight; 
+                            if (i === 0) {
+                                ctx.moveTo(x - F_PADDING, waveY);
+                            } else {
+                                ctx.lineTo(x - F_PADDING + i, waveY);
+                            }
+                        }
+                        ctx.stroke();
+                        break;
+                    case 'none':
+                    default:
+                        // No piping
+                        break;
+                }
+            }
+
+            /**
+             * Clears the canvas and draws the entire cake based on the current state.
+             */
+            function drawCake() {
+                // 1. Clear Canvas
+                ctx.clearRect(0, 0, W, H);
+
+                // 2. Define dimensions and positions for the tiers
+                const numTiers = cakeState.tiers;
+                const tierHeight = 50; // <--- tierHeight is defined here
+                const tierSpacing = 15; // Vertical spacing between tiers
+                const maxTierWidth = W * 0.6; // Width of the largest (bottom) tier
+                const minTierWidth = W * 0.2; // Width of the smallest (top) tier
+
+                // Calculate the total height of the cake for vertical centering
+                const totalCakeHeight = numTiers * (tierHeight + tierSpacing) - tierSpacing;
+                // The Y coordinate where the bottom of the bottom tier should sit
+                const bottomTierY = H - (H - totalCakeHeight) / 2;
+                
+                // 3. Draw the Cake Stand (Drawn first so the cake sits on top of it)
+                drawCakeStand(bottomTierY, maxTierWidth);
+
+                // 4. Draw each tier, starting from the bottom (largest)
+                for (let i = 0; i < numTiers; i++) {
+                    // i=0 is the bottom tier, i=numTiers-1 is the top tier
+                    const tierIndex = numTiers - 1 - i;
+                    // Calculate tier width based on its position (i.e., its index)
+                    const tierWidth = minTierWidth + (maxTierWidth - minTierWidth) * (tierIndex / (numTiers - 1 || 1));
+                    
+                    const tierX = W / 2 - tierWidth / 2;
+                    // Calculate Y position: start from the bottom, move up by tier height + spacing for each tier
+                    const tierY = bottomTierY - (i + 1) * tierHeight - i * tierSpacing;
+
+                    // Draw the sponge cake
+                    drawTierBase(tierX, tierY, tierWidth, tierHeight, cakeState.cakeColor);
+
+                    // Draw the frosting layer
+                    drawFrosting(tierX, tierY, tierWidth, tierHeight, cakeState.frostingColor);
+
+                        // Draw the piping detail on the edge (uses separate piping color so the design is visible)
+                        drawPiping(tierX, tierY, tierWidth, tierHeight, cakeState.pipingDesign, cakeState.pipingColor);
+                }
+            }
+
+
+            // --- Event Handlers and Listeners ---
+
+            /**
+             * Updates the state and redraws the cake when a control changes.
+             */
+            function handleControlChange() {
+                cakeState.tiers = parseInt(tiersInput.value);
+                cakeState.cakeColor = cakeColorInput.value;
+                cakeState.frostingColor = frostingColorInput.value;
+                cakeState.pipingDesign = pipingDesignSelect.value;
+
+                // New controls
+                if (pipingColorInput) cakeState.pipingColor = pipingColorInput.value;
+                if (flavorSelect) cakeState.flavor = flavorSelect.value;
+
+                // Update UI feedback
+                tiersValueSpan.textContent = cakeState.tiers;
+                cakeColorHexSpan.textContent = cakeState.cakeColor.toUpperCase();
+                frostingColorHexSpan.textContent = cakeState.frostingColor.toUpperCase();
+                if (pipingColorHexSpan) pipingColorHexSpan.textContent = (cakeState.pipingColor || '').toUpperCase();
+                if (flavorNote) flavorNote.textContent = 'Selected flavor: ' + (cakeState.flavor || '').charAt(0).toUpperCase() + (cakeState.flavor || '').slice(1);
+
+                drawCake();
+            }
+
+            // Initial drawing and setup on window load
+            window.addEventListener('load', () => {
+                // --- Canvas Initialization ---
+                canvas = document.getElementById('cakeCanvas');
+                ctx = canvas.getContext('2d');
+                W = canvas.width;
+                H = canvas.height;
+
+                // Initialize Base state object
+                cakeState = {
+                    tiers: 3,
+                    cakeColor: '#E6CCB2',
+                    frostingColor: '#FFFFFF',
+                    pipingDesign: 'dots',
+                        pipingColor: '#FF6B6B',
+                        flavor: 'vanilla'
+                };
+
+                // Initialize UI Element references
+                tiersInput = document.getElementById('tiersInput');
+                tiersValueSpan = document.getElementById('tiersValue');
+                cakeColorInput = document.getElementById('cakeColorInput');
+                cakeColorHexSpan = document.getElementById('cakeColorHex');
+                frostingColorInput = document.getElementById('frostingColorInput');
+                frostingColorHexSpan = document.getElementById('frostingColorHex');
+                pipingDesignSelect = document.getElementById('pipingDesignSelect');
+                    // Optional new controls
+                    pipingColorInput = document.getElementById('pipingColorInput');
+                    pipingColorHexSpan = document.getElementById('pipingColorHex');
+                    flavorSelect = document.getElementById('flavorSelect');
+                    flavorNote = document.getElementById('flavorNote');
+                
+                // Set initial hex colors on load (UI update)
+                cakeColorHexSpan.textContent = cakeColorInput.value.toUpperCase();
+                frostingColorHexSpan.textContent = frostingColorInput.value.toUpperCase();
+                    pipingColorHexSpan.textContent = (cakeState.pipingColor || '').toUpperCase();
+                    flavorNote.textContent = 'Selected flavor: ' + (cakeState.flavor || '').charAt(0).toUpperCase() + (cakeState.flavor || '').slice(1);
+
+                // Add event listeners to all controls
+                tiersInput.addEventListener('input', handleControlChange);
+                cakeColorInput.addEventListener('input', handleControlChange);
+                frostingColorInput.addEventListener('input', handleControlChange);
+                pipingDesignSelect.addEventListener('change', handleControlChange);
+                    if (pipingColorInput) pipingColorInput.addEventListener('input', handleControlChange);
+                    if (flavorSelect) flavorSelect.addEventListener('change', handleControlChange);
+
+                // Handle responsiveness: resize canvas when the window resizes
+                const resizeCanvas = () => {
+                    const container = canvas.parentElement;
+                    // Set canvas width/height explicitly for scaling context
+                    // Keeping the ratio fixed for a centered look
+                    canvas.width = container.clientWidth > 800 ? 800 : container.clientWidth * 0.95;
+                    canvas.height = canvas.width * (600 / 800); // Maintain 800x600 ratio
+                    // W and H must be updated here for drawing functions to use the correct dimensions
+                    W = canvas.width;
+                    H = canvas.height;
+                    drawCake(); // Redraw on resize
+                };
+
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas(); // Initial call to set size and draw
+            });
+    })(); // End of IIFE
+
+    </script>
+</body>
+</html>

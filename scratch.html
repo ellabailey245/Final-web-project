@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cakes</title>
+    <link rel="stylesheet" href="css/mystyles.css">
+</head>
+
+<body>
+  
+
+    <!-- Header with top-right toggle menu (visual branding removed) -->
+    <header class="site-header">
+        <!-- visually-hidden site title for accessibility -->
+        <h1 class="sr-only">Scratch</h1>
+
+        <div class="header-controls" style="display:flex;align-items:center;gap:8px">
+            <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="topnav-menu">
+                <span class="sr-only">Open navigation</span>
+                <span class="hamburger" aria-hidden="true"></span>
+            </button>
+        </div>
+
+        <div id="topnav-menu" class="dropdown-menu" hidden aria-label="Top navigation">
+            <a class="dropdown-item" href="index.html">Home</a>
+            <a class="dropdown-item" href="cakegame.html">Want to design a cake?</a>
+        </div>
+    </header>
+<div class="caketitle">
+    <h1 id="page-top">Cakes!!</h1>
+</div>
+    <div class="header2">
+        <p> Wedding cakes I have made recently:</p> </div>
+    <div class="cakeinfo"><ol>
+            <li>
+                <div class="cake-title"><strong>05/28</strong> — First wedding cake</div>
+                <ul class="cake-details">
+                    <li>Vanilla base</li>
+                    <li>Vanilla frosting</li>
+                </ul>
+            </li>
+            <li>
+                <div class="cake-title"><strong>07/14</strong> — Cousin's wedding</div>
+                <ul class="cake-details">
+                    <li>Chocolate base</li>
+                    <li>Vanilla frosting</li>
+                </ul>
+            </li>
+            <li>
+                <div class="cake-title"><strong>08/15</strong> — Family celebration</div>
+                <ul class="cake-details">
+                    <li>Vanilla base</li>
+                    <li>Cream-cheese whipped frosting</li>
+                </ul>
+            </li>
+        </ol>
+        </div>
+
+        <figure class="figure">
+            <img src="assets/img/abby's cake.jpg" alt="Abby's wedding cake" class="img-responsive">
+            <figcaption class="figcaption">Abby's wedding cake — vanilla sponge with vanilla frosting.</figcaption>
+        </figure>
+    <figure class="figure">
+        <img src="assets/img/mattie's cake.jpg" alt="Mattie's wedding cake" class="img-responsive">
+        <figcaption class="figcaption">Mattie's wedding cake — chocolate sponge with buttercream frosting.</figcaption>
+    </figure>
+
+    <h2>Youtube</h2>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ca91nxIRRyU?si=CuPZvgSYAAy59UQ3"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<p>Something to take into account while thinking about food</p>
+
+    <h2>Tableau</h2>
+    <div class="tableau-container" style="max-width:70%; margin:0 auto;">
+        <div class='tableauPlaceholder' id='viz1765394270020' style='position: relative; width:70%; height:800px;'>
+            <noscript>
+                <a href='#'>
+                    <img alt='Rate of Food Insecurity Among Households With Older Adults (Age 60+), by State, 2019-2021'
+                        src='https://public.tableau.com/static/images/Fo/FoodInsecurityAmongOlderAdults/Dashboard1/1_rss.png'
+                        style='border: none' />
+                </a>
+            </noscript>
+            <object class='tableauViz' style='display:none;'>
+                <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                <param name='embed_code_version' value='3' />
+                <param name='site_root' value='' />
+                <param name='name' value='FoodInsecurityAmongOlderAdults/Dashboard1' />
+                <param name='tabs' value='no' />
+                <param name='toolbar' value='yes' />
+                <param name='static_image'
+                    value='https://public.tableau.com/static/images/Fo/FoodInsecurityAmongOlderAdults/Dashboard1/1.png' />
+                <param name='animate_transition' value='yes' />
+                <param name='display_static_image' value='yes' />
+                <param name='display_spinner' value='yes' />
+                <param name='display_overlay' value='yes' />
+                <param name='display_count' value='yes' />
+                <param name='language' value='en-US' />
+            </object>
+        </div>
+    </div>
+    <script type='text/javascript'>
+        (function () {
+            var divElement = document.getElementById('viz1765394270020');
+            var vizElement = divElement.getElementsByTagName('object')[0];
+            if (divElement.offsetWidth > 800) {
+                vizElement.style.width = '1000px'; vizElement.style.height = '827px';
+            } else if (divElement.offsetWidth > 500) {
+                vizElement.style.width = '1000px'; vizElement.style.height = '827px';
+            } else {
+                vizElement.style.width = '100%'; vizElement.style.height = '927px';
+            }
+            var scriptElement = document.createElement('script');
+            scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+            vizElement.parentNode.insertBefore(scriptElement, vizElement);
+        })();
+    </script>
+    <script>
+        // Toggle top-right menu
+        (function(){
+            var btn = document.getElementById('menuToggle');
+            var menu = document.getElementById('topnav-menu');
+            if(!btn || !menu) return;
+            function openMenu(){
+                menu.hidden = false; btn.setAttribute('aria-expanded','true');
+            }
+            function closeMenu(){
+                menu.hidden = true; btn.setAttribute('aria-expanded','false');
+            }
+            btn.addEventListener('click', function(e){
+                if(menu.hidden) openMenu(); else closeMenu();
+            });
+            // Close when clicking outside
+            document.addEventListener('click', function(e){
+                if(!menu.hidden && !menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+            });
+            // Close on escape key
+            document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeMenu(); });
+        })();
+    </script>
+<footer> <a href="#page-top">Back to top</a></footer>
+</body>
